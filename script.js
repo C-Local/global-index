@@ -31,10 +31,6 @@ async function fetchCountry(query) {
   }
 
   const data = await response.json();
-
-  // Log the full v5 structure on first load so field names can be verified
-  console.log("v5 raw response:", JSON.stringify(data, null, 2));
-
   const objects = data?.data?.objects ?? [];
 
   if (objects.length === 0) {
@@ -92,8 +88,7 @@ function renderError(message) {
 }
 
 function renderProfile(country, borders) {
-  // ── Extract all data with optional chaining ──────────────────────────────
-  // Names
+  // ── Names ────────────────────────────────────────────────────────────────
   const commonName = country.names?.common ?? "Unknown";
   const officialName = country.names?.official ?? commonName;
   const nativeName = country.names?.native
@@ -102,75 +97,112 @@ function renderProfile(country, borders) {
         .replace(/ /g, "_")
     : officialName.toUpperCase().replace(/ /g, "_");
 
-  // Codes
+  // ── Codes ────────────────────────────────────────────────────────────────
   const alpha2 = country.codes?.alpha_2 ?? "";
   const alpha3 = country.codes?.alpha_3 ?? "";
   const ccn3 = country.codes?.ccn3 ?? "000";
-  const fifa = country.codes?.fifa ?? "N/A";
+  const fifa = country.codes?.fifa ?? "";
 
-  // Visuals
-  const flagUrl = country.flag?.png ?? "";
-  const flagAlt = country.flag?.alt ?? `Flag of ${commonName}`;
-  const coatUrl = country.coatOfArms?.png ?? "";
+  // ── Flag — v5 uses url_png not png ───────────────────────────────────────
+  const flagUrl = country.flag?.url_png ?? "";
+  const flagAlt = country.flag?.description ?? `Flag of ${commonName}`;
+  const flagEmoji = country.flag?.emoji ?? "";
 
-  // Geography
-  const capital = country.capitals?.[0] ?? country.capital?.[0] ?? "N/A";
+  // ── Capital — v5 capitals is array of objects with .name ─────────────────
+  const capital = country.capitals?.[0]?.name ?? "N/A";
+
+  // ── Geography ────────────────────────────────────────────────────────────
   const region = country.region ?? "N/A";
   const subregion = country.subregion ?? region;
   const landlocked = country.landlocked ? "YES" : "NO";
-  const lat = country.latlng?.[0] ?? 0;
-  const lng = country.latlng?.[1] ?? 0;
+
+  // v5 uses coordinates object {lat, lng}, not latlng array
+  const lat = country.coordinates?.lat ?? 0;
+  const lng = country.coordinates?.lng ?? 0;
   const latDir = lat >= 0 ? "N" : "S";
   const lngDir = lng >= 0 ? "E" : "W";
   const coordDisplay = `${Math.abs(lat).toFixed(4)}° ${latDir}, ${Math.abs(lng).toFixed(4)}° ${lngDir}`;
 
-  // Stats
+  // ── Area — v5 area is object {kilometers, miles} ─────────────────────────
+  const area = country.area?.kilometers ?? 0;
+  const areaDisplay = area.toLocaleString();
+  const areaBarWidth = Math.min(100, Math.round((area / 17_000_000) * 100));
+
+  // ── Population ───────────────────────────────────────────────────────────
   const population = country.population ?? 0;
-  const area = country.area ?? 0;
   const popDisplay = formatPopulation(population);
   const popBarWidth = Math.min(
     100,
     Math.round((population / 1_500_000_000) * 100),
   );
-  const areaBarWidth = Math.min(100, Math.round((area / 17_000_000) * 100));
 
-  // Membership — v5 field path uncertain; fallback chain covers both formats
-  const isUnMember = country.memberships?.un ?? country.unMember ?? false;
-  const unStatus = isUnMember ? "UN_MEMBER" : "OBSERVER";
-  const isIndependent = country.independent ?? true;
+  // ── Classification & Memberships ─────────────────────────────────────────
+  const isUnMember =
+    country.memberships?.un ?? country.classification?.un_member ?? false;
+  const isIndependent = country.classification?.sovereign ?? true;
+  const mem = country.memberships ?? {};
 
-  // Practical info
-  const currency = country.currencies
-    ? Object.values(country.currencies)
-        .map((c) => `${c.name} (${c.symbol})`)
-        .join(", ")
+  // Build dynamic membership badge list from actual data
+  const membershipBadges = [
+    mem.un && "UN_MEMBER",
+    mem.eu && "EU_CORE",
+    mem.nato && "NATO_ALLIED",
+    mem.g7 && "G7_MEMBER",
+    mem.g20 && "G20_MEMBER",
+    mem.brics && "BRICS",
+    mem.commonwealth && "COMMONWEALTH",
+    mem.schengen && "SCHENGEN",
+    mem.asean && "ASEAN",
+    mem.arab_league && "ARAB_LEAGUE",
+    mem.african_union && "AU_MEMBER",
+    mem.oecd && "OECD",
+  ].filter(Boolean);
+
+  // ── Currencies — v5 is array of objects [{code, name, symbol}] ───────────
+  const currency = country.currencies?.length
+    ? country.currencies.map((c) => `${c.name} (${c.symbol})`).join(", ")
     : "N/A";
-  const drivingSide = country.car?.side
-    ? country.car.side.charAt(0).toUpperCase() +
-      country.car.side.slice(1) +
+
+  // ── Driving side — v5 uses cars.driving_side not car.side ────────────────
+  const drivingSide = country.cars?.driving_side
+    ? country.cars.driving_side.charAt(0).toUpperCase() +
+      country.cars.driving_side.slice(1) +
       "_Steer"
     : "N/A";
-  const tld = country.tlds?.[0] ?? country.tld?.[0] ?? "N/A";
-  const dialCode =
-    country.idd?.root && country.idd?.suffixes?.[0]
-      ? `${country.idd.root}${country.idd.suffixes[0]}`
-      : (country.idd?.root ?? "N/A");
-  const language = country.languages
-    ? Object.values(country.languages).join(", ").toUpperCase()
-    : "N/A";
-  const startOfWeek = country.startOfWeek
-    ? country.startOfWeek.toUpperCase() + "_0000"
+
+  // ── TLDs — same path as v3.1 ─────────────────────────────────────────────
+  const tld = country.tlds?.[0] ?? "N/A";
+
+  // ── Dialing code — v5 uses calling_codes array not idd object ────────────
+  const dialCode = country.calling_codes?.length
+    ? "+" + country.calling_codes[0]
     : "N/A";
 
-  // Links
-  const googleMaps = country.maps?.googleMaps ?? "#";
-  const osmLink = country.maps?.openStreetMaps ?? "#";
+  // ── Languages — v5 is array of objects [{name, native_name, ...}] ────────
+  const language = country.languages?.length
+    ? country.languages
+        .map((l) => l.name)
+        .join(", ")
+        .toUpperCase()
+    : "N/A";
 
-  // Demonym — used for "class" display
+  // ── Start of week — v5 is date.start_of_week not startOfWeek ─────────────
+  const startOfWeek = country.date?.start_of_week
+    ? country.date.start_of_week.toUpperCase() + "_0000"
+    : "N/A";
+
+  // ── Links — v5 uses links object not maps object ──────────────────────────
+  const googleMaps = country.links?.google_maps ?? "#";
+  const osmLink = country.links?.open_street_maps ?? "#";
+
+  // ── Government type — bonus v5 field ─────────────────────────────────────
+  const govType = country.government_type ?? "N/A";
+
+  // ── Demonym ───────────────────────────────────────────────────────────────
   const demonym = country.demonyms?.eng?.m ?? commonName;
   const citizenClass = `${demonym.toUpperCase().replace(/ /g, "_")}_CITIZEN`;
 
-  // Borders — rendered as badge chips
+  // ── Borders grid ──────────────────────────────────────────────────────────
   const borderBadges =
     borders.length > 0
       ? borders
@@ -184,11 +216,22 @@ function renderProfile(country, borders) {
           .join("")
       : `<span class="text-[10px] font-label-caps text-on-surface-variant">NONE — ISLAND_NATION</span>`;
 
-  // Map embed using real coordinates
+  // ── Membership badges HTML ────────────────────────────────────────────────
+  const membershipHTML =
+    membershipBadges.length > 0
+      ? membershipBadges
+          .map(
+            (m) =>
+              `<span class="text-[9px] font-label-caps bg-tertiary/10 text-tertiary px-1 border border-tertiary/30 rounded">${m}</span>`,
+          )
+          .join("")
+      : `<span class="text-[9px] font-label-caps bg-outline/10 text-outline px-1 border border-outline/30 rounded">NON_MEMBER</span>`;
+
+  // ── Embedded map — using actual country coordinates ───────────────────────
   const bbox = 10;
   const mapSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${lng - bbox},${lat - bbox},${lng + bbox},${lat + bbox}&layer=mapnik`;
 
-  // ── Render ───────────────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────────────
   results.innerHTML = `
     <div class="flex items-center gap-2 mb-4">
       <span class="w-2 h-2 bg-tertiary-fixed rounded-full animate-pulse"></span>
@@ -205,16 +248,12 @@ function renderProfile(country, borders) {
               ${
                 flagUrl
                   ? `<img alt="${flagAlt}" class="w-full h-full object-cover" src="${flagUrl}" />`
-                  : `<div class="w-full h-full flex items-center justify-center text-outline text-[10px] font-label-caps">NO_FLAG</div>`
+                  : `<div class="w-full h-full flex items-center justify-center text-4xl">${flagEmoji}</div>`
               }
             </div>
-            <!-- Coat of arms -->
+            <!-- Emoji/crest slot — coatOfArms not available in v5 free tier -->
             <div class="w-12 h-12 self-center rounded border border-outline/30 bg-surface-container-highest p-1 flex items-center justify-center">
-              ${
-                coatUrl
-                  ? `<img alt="Coat of arms of ${commonName}" class="w-8 h-8 object-contain" src="${coatUrl}" />`
-                  : `<span class="text-[8px] font-label-caps text-outline text-center leading-tight">NO_CREST</span>`
-              }
+              <span class="text-2xl" title="Flag emoji">${flagEmoji}</span>
             </div>
           </div>
           <div>
@@ -228,6 +267,9 @@ function renderProfile(country, borders) {
             <div class="font-label-caps text-on-surface-variant text-[14px] mt-1 tracking-tight">
               ${officialName}
             </div>
+            <div class="flex items-center gap-2 mt-1">
+              <span class="font-label-caps text-[10px] text-on-surface-variant tracking-tight">${govType}</span>
+            </div>
             <div class="flex items-center gap-4 mt-3">
               <span class="bg-secondary-container text-on-secondary-container font-label-caps text-[10px] px-2 py-0.5 rounded">
                 ${isUnMember ? "RANK: ALLIED_MEMBER" : "RANK: INDEPENDENT"}
@@ -238,9 +280,9 @@ function renderProfile(country, borders) {
         </div>
         <div class="text-left md:text-right space-y-1">
           <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Registry IDs</span>
-          <div class="flex md:justify-end gap-2">
+          <div class="flex md:justify-end gap-2 flex-wrap">
             <span class="text-[10px] font-label-caps bg-surface-container-highest px-2 py-1 rounded text-primary/80 border border-primary/20">ISO: ${alpha3} / ${ccn3}</span>
-            ${fifa !== "N/A" ? `<span class="text-[10px] font-label-caps bg-surface-container-highest px-2 py-1 rounded text-primary/80 border border-primary/20">FIFA: ${fifa}</span>` : ""}
+            ${fifa ? `<span class="text-[10px] font-label-caps bg-surface-container-highest px-2 py-1 rounded text-primary/80 border border-primary/20">FIFA: ${fifa}</span>` : ""}
           </div>
           <div class="pt-2">
             <span class="font-label-caps text-label-caps text-on-surface-variant">Class</span>
@@ -267,7 +309,7 @@ function renderProfile(country, borders) {
       <div class="bg-surface-container border border-outline-variant/30 p-4 rounded-lg space-y-2">
         <div class="flex justify-between items-center">
           <span class="font-label-caps text-label-caps text-primary">TERRITORY SIZE (SQ KM)</span>
-          <span class="font-stat-value text-stat-value text-primary">${area.toLocaleString()}</span>
+          <span class="font-stat-value text-stat-value text-primary">${areaDisplay}</span>
         </div>
         <div class="h-2 bg-surface-container-lowest border border-outline-variant/20 rounded-full overflow-hidden">
           <div class="h-full bg-primary-container shadow-[0_0_8px_rgba(0,240,255,0.5)]" style="width: ${areaBarWidth}%"></div>
@@ -278,29 +320,18 @@ function renderProfile(country, borders) {
       <div class="bg-surface-container border border-outline-variant/30 p-4 rounded-lg space-y-2">
         <div class="flex justify-between items-center">
           <span class="font-label-caps text-label-caps text-tertiary-fixed">GUILD MEMBERSHIP</span>
-          <span class="font-stat-value text-stat-value text-tertiary-fixed">${unStatus}</span>
+          <span class="font-stat-value text-stat-value text-tertiary-fixed">${isUnMember ? "UN_MEMBER" : "OBSERVER"}</span>
         </div>
-        <div class="flex gap-2">
-          ${
-            isUnMember
-              ? `<span class="text-[9px] font-label-caps bg-tertiary/10 text-tertiary px-1 border border-tertiary/30 rounded">UN_MEMBER</span>`
-              : `<span class="text-[9px] font-label-caps bg-outline/10 text-outline px-1 border border-outline/30 rounded">NON_MEMBER</span>`
-          }
-          ${
-            isIndependent
-              ? `<span class="text-[9px] font-label-caps bg-tertiary/10 text-tertiary px-1 border border-tertiary/30 rounded">SOVEREIGN</span>`
-              : ""
-          }
-        </div>
+        <div class="flex gap-1 flex-wrap">${membershipHTML}</div>
         <p class="text-[10px] font-label-caps text-on-surface-variant uppercase">
-          Independent: ${isIndependent ? "Verified" : "Unverified"}
+          Sovereign: ${isIndependent ? "Verified" : "Unverified"}
         </p>
       </div>
     </section>
 
     <!-- Two column -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- Geography -->
+      <!-- Geography & Protocols -->
       <section class="space-y-4">
         <h3 class="font-label-caps text-label-caps text-primary tracking-widest pl-2 border-l-2 border-primary-container">ADJACENT_SECTORS</h3>
         <div class="bg-surface-container border border-outline-variant/20 rounded-lg p-5 space-y-4">
@@ -320,7 +351,7 @@ function renderProfile(country, borders) {
           </div>
           <div class="pt-2 border-t border-outline-variant/10">
             <span class="font-label-caps text-[10px] text-tertiary-fixed block mb-2 tracking-widest">ENVIRONMENTAL_MODIFIERS</span>
-            <div class="flex gap-4">
+            <div class="flex gap-4 flex-wrap">
               <div class="flex items-center gap-1">
                 <span class="material-symbols-outlined text-[14px] text-on-surface-variant" data-icon="water_drop">water_drop</span>
                 <span class="text-[10px] font-label-caps text-on-surface-variant">LANDLOCKED: ${landlocked}</span>
@@ -333,7 +364,6 @@ function renderProfile(country, borders) {
           </div>
         </div>
 
-        <!-- Global Protocols -->
         <h3 class="font-label-caps text-label-caps text-secondary-fixed tracking-widest pl-2 border-l-2 border-secondary-container mt-8">GLOBAL_PROTOCOLS</h3>
         <div class="grid grid-cols-2 gap-3">
           <div class="bg-surface-container p-3 rounded border border-outline-variant/20 neon-glow transition-all">
@@ -382,10 +412,8 @@ function renderProfile(country, borders) {
             style="border:none"
             loading="lazy"
           ></iframe>
-          <div class="absolute inset-0 pointer-events-none">
-            <div class="absolute inset-0 flex items-center justify-center">
-              <div class="w-2 h-2 bg-primary rounded-full shadow-[0_0_10px_#00f0ff]"></div>
-            </div>
+          <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
+            <div class="w-2 h-2 bg-primary rounded-full shadow-[0_0_10px_#00f0ff]"></div>
           </div>
           <div class="absolute bottom-3 left-3 right-3 flex justify-between items-end pointer-events-none">
             <span class="font-label-caps text-[10px] bg-surface-container-lowest/80 text-primary px-2 py-0.5 rounded backdrop-blur-sm border border-primary/20">
