@@ -1,4 +1,6 @@
-// Custom AI-assisted logic
+// Global Index — country search logic
+// Fetches data via Netlify serverless proxy functions to keep the API key
+// off the client. Renders results dynamically into #search-results.
 
 // ============================================================
 // ELEMENT REFERENCES

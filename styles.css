@@ -1218,38 +1218,3 @@ body {
   }
 }
 
-/* Custom AI-assisted styles */
-
-.loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  padding: 3rem 0;
-}
-
-.loading__spinner {
-  width: 36px;
-  height: 36px;
-
-  border: 3px solid var(--border); /* three sides — muted */
-  border-top-color: var(--accent-blue); /* one side — accent color */
-  border-radius: 50%;
-
-  animation: spin 0.75s linear infinite;
-}
-
-.error {
-  padding: 3rem 0;
-  text-align: center;
-}
-
-.error__icon {
-  font-size: 2rem;
-  margin-bottom: 0.75rem;
-}
-
-.error__message {
-  color: var(--accent-red);
-  font-size: 0.9rem;
-}
