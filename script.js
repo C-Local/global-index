@@ -172,7 +172,7 @@ function renderProfile(country, borders) {
       "_Steer"
     : "N/A";
 
-  // ── TLDs — same path as v3.1 ─────────────────────────────────────────────
+  // ── TLDs — v5 renamed from tld (v3.1) to tlds (v5) ──────────────────────
   const tld = country.tlds?.[0] ?? "N/A";
 
   // ── Dialing code — v5 uses calling_codes array not idd object ────────────

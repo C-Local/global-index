@@ -34,10 +34,10 @@
     <link rel="stylesheet" href="/styles.css" />
 
     <!--
-      Tailwind config — must come after the CDN script loads so the theme
-      extension is picked up. Sets up the dark mode class strategy and defines
-      the custom colour tokens, spacing, and typography scales from Stitch.
-    -->
+  Tailwind config — must come AFTER the CDN script because this syntax
+  assigns to the tailwind global object the CDN creates. Placing it before
+  the CDN would throw a ReferenceError at runtime.
+-->
     <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
@@ -113,13 +113,37 @@
               "headline-md": ["Hanken Grotesk"],
             },
             fontSize: {
-              "headline-lg-mobile": ["32px", { lineHeight: "38px", letterSpacing: "-0.02em", fontWeight: "800" }],
-              "headline-lg":        ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "800" }],
-              "stat-value":         ["20px", { lineHeight: "24px", fontWeight: "700" }],
-              "body-md":            ["16px", { lineHeight: "24px", fontWeight: "400" }],
-              "label-caps":         ["12px", { lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "600" }],
-              "body-lg":            ["18px", { lineHeight: "28px", fontWeight: "400" }],
-              "headline-md":        ["24px", { lineHeight: "32px", fontWeight: "700" }],
+              "headline-lg-mobile": [
+                "32px",
+                {
+                  lineHeight: "38px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "800",
+                },
+              ],
+              "headline-lg": [
+                "40px",
+                {
+                  lineHeight: "48px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "800",
+                },
+              ],
+              "stat-value": ["20px", { lineHeight: "24px", fontWeight: "700" }],
+              "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "label-caps": [
+                "12px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.1em",
+                  fontWeight: "600",
+                },
+              ],
+              "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+              "headline-md": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "700" },
+              ],
             },
           },
         },
@@ -130,24 +154,35 @@
     <script src="/script.js" defer></script>
   </head>
 
-  <body class="text-on-surface font-body-md min-h-screen pb-12 overflow-x-hidden">
-
+  <body
+    class="text-on-surface font-body-md min-h-screen pb-12 overflow-x-hidden"
+  >
     <!-- CRT scanline overlay — purely decorative, pointer-events disabled -->
     <div class="scanline-overlay"></div>
 
     <!-- Top navigation bar -->
-    <header class="bg-surface-dim dark:bg-surface-dim sticky top-0 z-50 border-b border-primary-container/20 shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
-      <div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-unit max-w-container-max mx-auto h-16">
+    <header
+      class="bg-surface-dim dark:bg-surface-dim sticky top-0 z-50 border-b border-primary-container/20 shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+    >
+      <div
+        class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-unit max-w-container-max mx-auto h-16"
+      >
         <div class="flex items-center gap-3">
           <div class="p-1 border border-primary-container rounded">
-            <span class="material-symbols-outlined text-primary-container">database</span>
+            <span class="material-symbols-outlined text-primary-container"
+              >database</span
+            >
           </div>
-          <h1 class="font-label-caps text-label-caps font-bold tracking-[0.2em] text-primary-container">
+          <h1
+            class="font-label-caps text-label-caps font-bold tracking-[0.2em] text-primary-container"
+          >
             GLOBAL_INDEX
           </h1>
         </div>
         <div class="flex items-center gap-4">
-          <button class="bg-primary/10 text-primary px-4 py-1 rounded border border-primary/30 font-label-caps text-[10px] tracking-widest hover:bg-primary/20 transition-all">
+          <button
+            class="bg-primary/10 text-primary px-4 py-1 rounded border border-primary/30 font-label-caps text-[10px] tracking-widest hover:bg-primary/20 transition-all"
+          >
             ADMIN_ACCESS
           </button>
         </div>
@@ -155,12 +190,16 @@
     </header>
 
     <main class="px-margin-mobile pt-6 max-w-container-max mx-auto space-y-8">
-
       <!-- Search bar -->
       <section class="w-full" aria-label="Country search">
-        <div class="search-container rounded-lg p-1 group focus-within:border-primary-container transition-all shadow-[0_0_20px_rgba(0,240,255,0.1)]">
+        <div
+          class="search-container rounded-lg p-1 group focus-within:border-primary-container transition-all shadow-[0_0_20px_rgba(0,240,255,0.1)]"
+        >
           <div class="flex items-center bg-surface-container-lowest p-4 gap-4">
-            <span class="material-symbols-outlined text-primary-container animate-pulse">search</span>
+            <span
+              class="material-symbols-outlined text-primary-container animate-pulse"
+              >search</span
+            >
             <input
               class="flex-1 bg-transparent border-none text-primary focus:ring-0 placeholder:text-outline/50 font-headline-md tracking-tight uppercase"
               placeholder="Search Country..."
@@ -171,16 +210,20 @@
               autocomplete="off"
             />
             <div class="hidden md:flex gap-2">
-              <span class="font-label-caps text-[10px] text-outline px-2 py-1 border border-outline/30 rounded">ENTER</span>
+              <span
+                class="font-label-caps text-[10px] text-outline px-2 py-1 border border-outline/30 rounded"
+                >ENTER</span
+              >
             </div>
           </div>
-          <div class="h-[2px] w-full bg-gradient-to-r from-transparent via-primary-container to-transparent opacity-50 group-focus-within:opacity-100"></div>
+          <div
+            class="h-[2px] w-full bg-gradient-to-r from-transparent via-primary-container to-transparent opacity-50 group-focus-within:opacity-100"
+          ></div>
         </div>
       </section>
 
       <!-- Search results — populated dynamically by script.js -->
       <div class="space-y-6" id="search-results" aria-live="polite"></div>
-
     </main>
   </body>
 </html>

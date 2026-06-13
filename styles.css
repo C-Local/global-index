@@ -1,4 +1,6 @@
-/* Styles AI-generated from Google Stitch and modified with TailWind CSS */
+/* Custom styles from Google Stitch — body background grid, scanline overlay,
+   and component-specific rules. The remainder of this file is the compiled
+   Tailwind CSS v4 output generated alongside the Stitch design. */
 
 /*! tailwindcss v4.3.1 | MIT License | https://tailwindcss.com */
 @layer properties;
@@ -1217,4 +1219,3 @@ body {
     }
   }
 }
-
