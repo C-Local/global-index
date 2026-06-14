@@ -3,7 +3,7 @@
 A country search app built with vanilla HTML, CSS (Tailwind), and JavaScript,
 deployed on Netlify with serverless functions as a secure API proxy.
 
-**[Live Demo →](https://your-site.netlify.app)** &nbsp;|&nbsp; **[View Code →](https://github.com/your-username/global-index)**
+**[Live Demo →](https://6a2da5dbf5e5fafc571cda3a--radiant-pony-644551.netlify.app/)** &nbsp;|&nbsp; **[View Code →](https://github.com/C-Local/global-index)**
 
 ---
 
@@ -18,12 +18,12 @@ deployed on Netlify with serverless functions as a secure API proxy.
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | HTML5 · Tailwind CSS (CDN) · Vanilla JavaScript |
-| Icons | Google Material Symbols |
-| API | REST Countries API v5 |
-| Proxy / Hosting | Netlify Functions · Netlify |
+| Layer           | Technology                                      |
+| --------------- | ----------------------------------------------- |
+| Frontend        | HTML5 · Tailwind CSS (CDN) · Vanilla JavaScript |
+| Icons           | Google Material Symbols                         |
+| API             | REST Countries API v5                           |
+| Proxy / Hosting | Netlify Functions · Netlify                     |
 
 ## Architecture
 
@@ -55,4 +55,4 @@ and dynamic rendering logic were hand-coded.
 
 ---
 
-*Built 2025 · Data via REST Countries API v5 · If data appears missing, the API may have changed*
+_Built 2025 · Data via REST Countries API v5 · If data appears missing, the API may have changed_
