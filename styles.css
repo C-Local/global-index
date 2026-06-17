@@ -80,6 +80,12 @@ body {
   );
   pointer-events: none;
 }
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3b494b #0a0e1a;
+}
+
 ::-webkit-scrollbar {
   width: 4px;
 }
@@ -91,6 +97,7 @@ body {
   border-radius: 10px;
 }
 body {
+  min-height: 100vh;
   min-height: 100dvh;
 }
 @layer theme, base, components, utilities;
