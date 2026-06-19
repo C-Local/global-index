@@ -162,7 +162,7 @@
 
     <!-- Top navigation bar -->
     <header
-      class="bg-surface-dim dark:bg-surface-dim sticky top-0 z-50 border-b border-primary-container/20 shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+      class="navigation-bar bg-surface-dim dark:bg-surface-dim sticky top-0 z-50 border-b border-primary-container/20 shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
     >
       <div
         class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-unit max-w-container-max mx-auto h-16"
@@ -173,11 +173,6 @@
               >database</a
             >
           </div>
-          <h1
-            class="font-label-caps text-label-caps font-bold tracking-[0.2em] text-primary-container"
-          >
-            GLOBAL_INDEX
-          </h1>
         </div>
         <div class="flex items-center gap-4">
           <button
@@ -190,8 +185,13 @@
     </header>
 
     <main class="px-margin-mobile pt-6 max-w-container-max mx-auto space-y-8">
-      <!-- Search bar -->
+      <!-- Search bar - human-edited -->
       <section class="w-full" aria-label="Country search">
+        <h1
+          class="project-title-default-position font-label-caps text-label-caps font-bold tracking-[2px] text-primary-container"
+        >
+          GLOBAL_INDEX
+        </h1>
         <div
           class="search-container rounded-lg p-1 group focus-within:border-primary-container transition-all shadow-[0_0_20px_rgba(0,240,255,0.1)]"
         >

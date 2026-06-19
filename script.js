@@ -3,9 +3,11 @@
 // off the client. Renders results dynamically into #search-results.
 
 // ============================================================
-// ELEMENT REFERENCES
+// ELEMENT REFERENCES - human-expanded
 // ============================================================
 
+const navBar = document.getElementById("navigation-bar");
+const searchBar = document.getElementById("search-container");
 const searchInput = document.getElementById("search-input");
 const results = document.getElementById("search-results");
 
@@ -68,16 +70,24 @@ function formatPopulation(pop) {
 }
 
 // ============================================================
-// RENDER FUNCTIONS
+// RENDER FUNCTIONS - human-modified
 // ============================================================
 
 function renderLoading() {
-  results.innerHTML = `
+  function renderLoader() {
+    results.innerHTML = `
     <div class="flex flex-col items-center justify-center py-16 gap-4">
       <div class="w-8 h-8 border-2 border-primary-container/30 border-t-primary-container rounded-full animate-spin"></div>
       <p class="font-label-caps text-[10px] text-outline tracking-widest">FETCHING_DATA...</p>
     </div>
   `;
+  }
+
+  if (!searchBar.classList.contains("search-container-transformed-position")) {
+    setTimeout(renderLoader(), 100);
+  } else {
+    renderLoader();
+  }
 }
 
 function renderError(message) {
@@ -232,6 +242,42 @@ function renderProfile(country, borders) {
   // ── Embedded map — using actual country coordinates ───────────────────────
   const bbox = 10;
   const mapSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${lng - bbox},${lat - bbox},${lng + bbox},${lat + bbox}&layer=mapnik`;
+
+  // Human-added class update for the search bar
+  if (!searchBar.classList.contains("search-container-transformed-position")) {
+    searchBar.classList.add("search-container-transformed-position");
+  }
+
+  // Human-added element-addition for the navigation bar
+  navBar.innerHTML = `
+  <header
+      class="navigation-bar bg-surface-dim dark:bg-surface-dim sticky top-0 z-50 border-b border-primary-container/20 shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+    >
+      <div
+        class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-unit max-w-container-max mx-auto h-16"
+      >
+        <div class="flex items-center gap-3">
+          <div class="p-1 border border-primary-container rounded">
+            <a class="material-symbols-outlined text-primary-container" href="."
+              >database</a
+            >
+          </div>
+          <h1
+            class="font-label-caps text-label-caps font-bold tracking-[0.2em] text-primary-container"
+          >
+            GLOBAL_INDEX
+          </h1>
+        </div>
+        <div class="flex items-center gap-4">
+          <button
+            class="bg-primary/10 text-primary px-4 py-1 rounded border border-primary/30 font-label-caps text-[10px] tracking-widest hover:bg-primary/20 transition-all"
+          >
+            ADMIN_ACCESS
+          </button>
+        </div>
+      </div>
+    </header>
+  `;
 
   // ── Render ────────────────────────────────────────────────────────────────
   results.innerHTML = `
