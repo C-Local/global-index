@@ -75,20 +75,12 @@ function formatPopulation(pop) {
 // ============================================================
 
 function renderLoading() {
-  function renderLoader() {
-    results.innerHTML = `
+  results.innerHTML = `
     <div class="flex flex-col items-center justify-center py-16 gap-4">
       <div class="w-8 h-8 border-2 border-primary-container/30 border-t-primary-container rounded-full animate-spin"></div>
       <p class="font-label-caps text-[10px] text-outline tracking-widest">FETCHING_DATA...</p>
     </div>
   `;
-  }
-
-  if (!searchBar.classList.contains("search-container-transformed-position")) {
-    setTimeout(renderLoader, 100);
-  } else {
-    renderLoader();
-  }
 }
 
 function renderError(message) {
