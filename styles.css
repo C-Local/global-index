@@ -70,12 +70,6 @@ body {
 
 .project-title-default-removed {
   display: none;
-  cursor: default;
-  user-select: none;
-  padding: 0;
-  margin: 0;
-  height: 0;
-  width: 0;
 }
 .search-container {
   margin-top: 178px;
