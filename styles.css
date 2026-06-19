@@ -61,12 +61,24 @@ body {
 }
 
 .project-title-default-position {
-  margin-top: 100px;
+  position: fixed;
+  justify-self: center;
+  top: 200px;
   text-align: center;
-  font-size: 40px !important;
+  font-size: 54px !important;
+}
+
+.project-title-default-removed {
+  display: none;
+  cursor: default;
+  user-select: none;
+  padding: 0;
+  margin: 0;
+  height: 0;
+  width: 0;
 }
 .search-container {
-  margin-top: 62px;
+  margin-top: 178px;
   position: relative;
   background: rgba(15, 19, 31, 0.8);
   border: 1px solid rgba(0, 240, 255, 0.3);

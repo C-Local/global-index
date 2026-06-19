@@ -7,6 +7,7 @@
 // ============================================================
 
 const navBar = document.getElementById("navigation-bar");
+const defProjectTitle = document.getElementById("project-title-default");
 const searchBar = document.getElementById("search-bar");
 const searchInput = document.getElementById("search-input");
 const results = document.getElementById("search-results");
@@ -242,6 +243,10 @@ function renderProfile(country, borders) {
   // ── Embedded map — using actual country coordinates ───────────────────────
   const bbox = 10;
   const mapSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${lng - bbox},${lat - bbox},${lng + bbox},${lat + bbox}&layer=mapnik`;
+
+  // Human-added class update for the default project title
+  defProjectTitle.classList.remove("project-title-default-position");
+  defProjectTitle.classList.add("project-title-default-removed");
 
   // Human-added class update for the search bar
   if (!searchBar.classList.contains("search-container-transformed-position")) {
