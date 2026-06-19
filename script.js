@@ -7,7 +7,7 @@
 // ============================================================
 
 const navBar = document.getElementById("navigation-bar");
-const searchBar = document.getElementById("search-container");
+const searchBar = document.getElementById("search-bar");
 const searchInput = document.getElementById("search-input");
 const results = document.getElementById("search-results");
 
