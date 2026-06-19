@@ -84,7 +84,7 @@ function renderLoading() {
   }
 
   if (!searchBar.classList.contains("search-container-transformed-position")) {
-    setTimeout(renderLoader(), 100);
+    setTimeout(renderLoader, 100);
   } else {
     renderLoader();
   }
