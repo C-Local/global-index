@@ -14,11 +14,7 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
     <!--
-      Preconnect hints — tell the browser to open connections to Google's
-      font servers before the actual font requests fire, reducing load time.
-      fonts.googleapis.com serves the CSS; fonts.gstatic.com serves the files.
-      crossorigin is required on the second one because font files are fetched
-      from a different origin than the CSS.
+      Preconnect hints
     -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -34,9 +30,7 @@
     <link rel="stylesheet" href="/styles.css" />
 
     <!--
-  Tailwind config — must come AFTER the CDN script because this syntax
-  assigns to the tailwind global object the CDN creates. Placing it before
-  the CDN would throw a ReferenceError at runtime.
+  Tailwind config
 -->
     <script id="tailwind-config">
       tailwind.config = {
@@ -150,14 +144,12 @@
       };
     </script>
 
-    <!-- defer: script downloads in parallel but executes after HTML is parsed -->
     <script src="/script.js" defer></script>
   </head>
 
   <body
     class="text-on-surface font-body-md min-h-screen pb-12 overflow-x-hidden"
   >
-    <!-- CRT scanline overlay — purely decorative, pointer-events disabled -->
     <div class="scanline-overlay"></div>
 
     <!-- Top navigation bar -->

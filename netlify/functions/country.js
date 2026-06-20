@@ -1,6 +1,5 @@
-// Serverless proxy — runs on Netlify's servers, never in the browser.
+// Serverless proxy — runs on Netlify's servers.
 // Reads the API key from an environment variable set in the Netlify dashboard.
-// The key never appears in any file committed to GitHub.
 
 exports.handler = async function (event) {
   const query = event.queryStringParameters?.name;
@@ -15,8 +14,7 @@ exports.handler = async function (event) {
   const apiKey = process.env.COUNTRIES_API_KEY;
 
   // Guard: if the environment variable isn't set, fail clearly rather than
-  // sending "Authorization: Bearer undefined" to the API and getting a
-  // confusing rejection response.
+  // sending "Authorization: Bearer undefined" to the API and getting a confusing rejection response.
   if (!apiKey) {
     return {
       statusCode: 500,
@@ -31,7 +29,7 @@ exports.handler = async function (event) {
         headers: {
           Authorization: `Bearer ${apiKey}`,
         },
-      }
+      },
     );
 
     const data = await response.json();
